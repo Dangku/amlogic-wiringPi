@@ -167,7 +167,7 @@ static void checkDevTree (char *argv [])
 			"    If you want to use SPI, you should find out spidev module line at the blacklist-odroid.conf\n"
 			"    and uncomment that. Then reboot to enable the module.\n\n"
 			"    Please refer to our wiki page:\n"
-			"      https://wiki.odroid.com/start\n", argv [0]) ;
+			"      https://wiki.banana-pi.org\n", argv [0]) ;
 		exit (1) ;
 	}
 }
@@ -226,6 +226,9 @@ static void doI2Cdetect (UNU int argc, char *argv [])
 			port = 0;
 		else
 			port = 2;
+		break;
+	case MODEL_BANANAPI_M2S:
+		port = 2;
 		break;
 	default:
 		break;

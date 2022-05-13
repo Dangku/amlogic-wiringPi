@@ -45,6 +45,7 @@
 #include "odroidn2.h"
 #include "odroidc4.h"
 #include "bananapim5.h"
+#include "bananapim2s.h"
 
 /*----------------------------------------------------------------------------*/
 // Const string define
@@ -63,6 +64,7 @@ const char *piModelNames [16] =
 	"ODROID-C4",
 	"ODROID-HC4",
 	"BPI-M5",
+	"BPI-M2S",
 };
 
 const char *piRevisionNames [16] =
@@ -513,6 +515,11 @@ int piGpioLayout (void) {
 			libwiring.rev = 1;
 			break;
 		case MODEL_BANANAPI_M5:
+			libwiring.maker = MAKER_AMLOGIC;
+			libwiring.mem = 4;
+			libwiring.rev = 1;
+			break;
+		case MODEL_BANANAPI_M2S:
 			libwiring.maker = MAKER_AMLOGIC;
 			libwiring.mem = 4;
 			libwiring.rev = 1;
@@ -1246,6 +1253,9 @@ int wiringPiSetup (void)
 	break;
 	case MODEL_BANANAPI_M5:
 		init_bananapim5(&libwiring);
+	break;
+	case MODEL_BANANAPI_M2S:
+		init_bananapim2s(&libwiring);
 	break;
 	default:
 		return wiringPiFailure (WPI_ALMOST,

@@ -28,14 +28,39 @@
 #include <stdio.h>
 #include <wiringPi.h>
 
-int main (void)
+int phy_led_test (void)
 {
   int i, led ;
 
-  printf ("Raspberry Pi - all-LED Sequencer\n") ;
-  printf ("==============================\n") ;
-  printf ("\n") ;
-  printf ("Connect LEDs to the 40 pins and watch ...\n") ;
+  wiringPiSetupPhys () ;
+
+  for (i = 0 ; i < 40 ; ++i) {
+    pinMode (i, OUTPUT) ;
+  }
+
+  for (;;)
+  {
+    for (led = 0 ; led < 40 ; ++led)
+    {
+      digitalWrite (led, 1) ;
+      delay(10);
+    }
+
+    delay(1000);
+
+    for (led = 0 ; led < 40 ; ++led)
+    {
+      digitalWrite (led, 0) ;
+      delay(10);
+    }
+
+    delay(1000);
+  }
+}
+
+int wpi_led_test (void)
+{
+  int i, led ;
 
   wiringPiSetup () ;
 
@@ -70,4 +95,15 @@ int main (void)
 
     delay(1000);
   }
+}
+
+int main (void)
+{
+  printf ("Bananapi - all-LED Sequencer\n") ;
+  printf ("==============================\n") ;
+  printf ("\n") ;
+  printf ("Connect LEDs to the 40 pins and watch ...\n") ;
+
+  //phy_led_test();
+  wpi_led_test();
 }

@@ -20,7 +20,7 @@ case "$1" in
 				*c|*c1|*c2)
 					cp -f /tmp/odroid-wiringpi/rules.d/99-odroid-wiringpi-meson.rules /etc/udev/rules.d/
 					;;
-				*n2|*c4|*m5)
+				*n2|*c4|*m5|*m2s)
 					cp -f /tmp/odroid-wiringpi/rules.d/99-odroid-wiringpi-aml.rules /etc/udev/rules.d/
 					;;
 				*)
