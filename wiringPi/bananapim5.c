@@ -30,17 +30,17 @@
 static const int pinToGpio[64] = {
 	// wiringPi number to native gpio number
 	479, 504,	//  0 |  1 : GPIOX.3, GPIOAO.8
-	480, 483,	//  2 |  3 : GPIOX.4, GPIOX.7
+	480, 483,	//  2 |  3 : GPIOX.4, GPIOX.7(PWM_F)
 	476, 477,	//  4 |  5 : GPIOX.0, GPIOX.1
-	478, 481,	//  6 |  7 : GPIOX.2, GPIOX.5
+	478, 481,	//  6 |  7 : GPIOX.2, GPIOX.5PWM_C)
 	493, 494,	//  8 |  9 : GPIOX.17(I2C-2_SDA), GPIOX.18(I2C-2_SCL)
-	486, 492,	// 10 | 11 : GPIOX.10(SPI_SS), GPIOX.16
+	486, 492,	// 10 | 11 : GPIOX.10(SPI_SS), GPIOX.16(PWM_E)
 	484, 485,	// 12 | 13 : GPIOX.8(SPI_MOSI), GPIOX.9(SPI_MISO)
-	487, 488,	// 14 | 15 : GPIOX.11(SPI_CLK), GPIOX.12(UART_TX_B)
-	489,  -1,	// 16 | 17 : GPIOX.13(UART_RX_B),
+	487, 488,	// 14 | 15 : GPIOX.11(SPI_CLK), GPIOX.12(UART_A_TX)
+	489,  -1,	// 16 | 17 : GPIOX.13(UART_A_RX),
 	 -1,  -1,	// 18 | 19 :
 	 -1, 490,	// 20 | 21 : , GPIOX.14
-	491, 482,	// 22 | 23 : GPIOX.15, GPIOX.6
+	491, 482,	// 22 | 23 : GPIOX.15, GPIOX.6(PWM_D)
 	503, 505,	// 24 | 25 : GPIOAO.7, GPIOAO.9
 	495, 432,	// 26 | 27 : GPIOX.19, GPIOH.5
 	506, 500,	// 28 | 29 : GPIOAO.10, GPIOAO.4
@@ -56,8 +56,8 @@ static const int phyToGpio[64] = {
 	 -1,  -1,	//  1 |  2 : 3.3V, 5.0V
 	493,  -1,	//  3 |  4 : GPIOX.17(I2C-2_SDA), 5.0V
 	494,  -1,	//  5 |  6 : GPIOX.18(I2C-2_SCL), GND
-	481, 488,	//  7 |  8 : GPIOX.5, GPIOX.12(UART_TX_B)
-	 -1, 489,	//  9 | 10 : GND, GPIOX.13(UART_RX_B)
+	481, 488,	//  7 |  8 : GPIOX.5, GPIOX.12(UART_A_TX)
+	 -1, 489,	//  9 | 10 : GND, GPIOX.13(UART_A_RX)
 	479, 504,	// 11 | 12 : GPIOX.3, GPIOAO.8
 	480,  -1,	// 13 | 14 : GPIOX.4, GND
 	483, 476,	// 15 | 16 : GPIOX.7, GPIOX.0
@@ -69,7 +69,7 @@ static const int phyToGpio[64] = {
 	474, 475,	// 27 | 28 : GPIOA.14(I2C-3_SDA), GPIOA.15(I2C-3_SCL)
 	490,  -1,	// 29 | 30 : GPIOX.14, GND
 	491, 495,	// 31 | 32 : GPIOX.15, GPIOX.19
-	482,  -1,	// 33 | 34 : GPIOX.6, GND
+	482,  -1,	// 33 | 34 : GPIOX.6(PWM_D), GND
 	503, 432,	// 35 | 36 : GPIOAO.7, GPIOH.5
 	505, 506,	// 37 | 38 : GPIOAO.9, GPIOAO.10
 	 -1, 500,	// 39 | 40 : GND, GPIOAO.4
@@ -77,6 +77,53 @@ static const int phyToGpio[64] = {
 	-1, -1, -1, -1, -1, -1, -1, -1,	// 41...48
 	-1, -1, -1, -1, -1, -1, -1, -1,	// 49...56
 	-1, -1, -1, -1, -1, -1, -1	// 57...63
+};
+
+static const int8_t _gpioToPwmPin [] = {
+			// (native gpio number - M5_GPIOA_PIN_START) to PWM pin number
+	 -1,		// GPIOA.0			0 + M2S_GPIOA_PIN_START(460)
+	 -1,  -1,	// GPIOA.1			1	| 2		GPIOA.2
+	 -1,  -1,	// GPIOA.3			3	| 4		GPIOA.4
+	 -1,  -1,	// GPIOA.5			5	| 6		GPIOA.6
+	 -1,  -1,	// GPIOA.7			7	| 8		GPIOA.8
+	 -1,  -1,	// GPIOA.9			9	| 10	GPIOA.10
+	 -1,  -1,	// GPIOA.11			11	| 12	GPIOA.12
+	 -1,  -1,	// GPIOA.13     	13	| 14	GPIOA.14
+	 -1,  -1,	// GPIOA.15     	15	| 16	GPIOX.0 (476)
+	 -1,  -1,	// GPIOX.1			17	| 18	GPIOX.2
+	 -1,  -1,	// GPIOX.3			19	| 20	GPIOX.4
+	  2,   3,	// GPIOX.5(PWM_C)	21	| 22	GPIOX.6(PWM_D)
+	  5,  -1,	// GPIOX.7(PWM_F)	23	| 24	GPIOX.8
+	 -1,  -1,	// GPIOX.9			25	| 26	GPIOX.10
+	 -1,  -1,	// GPIOX.11			27	| 28	GPIOX.12
+	 -1,  -1,	// GPIOX.13			29	| 30	GPIOX.14
+	 -1,   4,	// GPIOX.15			31	| 32	GPIOX.16(PWM_E)
+	 -1,  -1,	// GPIOX.17			33	| 34	GPIOX.18
+	 -1,  -1,	// GPIOX.19			35	| 36
+	 -1,  -1,	// 					37	| 38
+	 -1,  -1,	// 					39	| 40
+	// Not used
+	-1, -1, -1, -1, -1, -1, -1, -1,	// 41...48
+	-1, -1, -1, -1, -1, -1, -1, -1,	// 49...56
+	-1, -1, -1, -1, -1, -1, -1	// 57...63
+};
+
+static const uint16_t pwmPinToALT [] = {
+	0, 0,	// A, B
+	4, 4,	// C 481 GPIOX.5 , D 482 GPIOX.6
+	1, 1	// E 492 GPIOX.16, F 483 GPIOX.7
+};
+
+static uint16_t pwmPinToRange [] = {
+	0, 0,	// A, B
+	0, 0,	// C 481 GPIOX.5 , D 482 GPIOX.6
+	0, 0	// E 492 GPIOX.16, F 483 GPIOX.7
+};
+
+static const uint16_t pwmPinToDutyOffset [] = {
+	M5_PWM_0_DUTY_CYCLE_OFFSET, M5_PWM_1_DUTY_CYCLE_OFFSET,	// A, B
+	M5_PWM_0_DUTY_CYCLE_OFFSET, M5_PWM_1_DUTY_CYCLE_OFFSET,	// C 481 GPIOX.5 , D 482 GPIOX.6
+	M5_PWM_0_DUTY_CYCLE_OFFSET, M5_PWM_1_DUTY_CYCLE_OFFSET	// E 492 GPIOX.16, F 483 GPIOX.7
 };
 
 /*----------------------------------------------------------------------------*/
@@ -89,6 +136,7 @@ static const int phyToGpio[64] = {
 /* GPIO mmap control */
 static volatile uint32_t *gpio;
 static volatile uint32_t *gpioao;
+static volatile uint32_t *pwm[3];
 
 /* wiringPi Global library */
 static struct libodroid	*lib = NULL;
@@ -106,6 +154,7 @@ static int	gpioToShiftReg	(int pin);
 static int	gpioToGPFSELReg	(int pin);
 static int	gpioToDSReg	(int pin);
 static int	gpioToMuxReg	(int pin);
+static int	gpioToPwmPin	(int pin);
 
 /*----------------------------------------------------------------------------*/
 // wiringPi core function
@@ -119,8 +168,11 @@ static int		_getPUPD		(int pin);
 static int		_pullUpDnControl	(int pin, int pud);
 static int		_digitalRead		(int pin);
 static int		_digitalWrite		(int pin, int value);
+static int		_pwmWrite		(int pin, int value);
 static int		_digitalWriteByte	(const unsigned int value);
 static unsigned int	_digitalReadByte	(void);
+static void		_pwmSetRange		(unsigned int range);
+static void		_pwmSetClock		(int divisor);
 
 /*----------------------------------------------------------------------------*/
 // board init function
@@ -304,6 +356,11 @@ static int gpioToMuxReg (int pin)
 }
 
 /*----------------------------------------------------------------------------*/
+static int gpioToPwmPin (int pin)
+{
+	return _gpioToPwmPin[pin - M5_GPIOA_PIN_START];
+}
+
 static int _getModeToGpio (int mode, int pin)
 {
 	int retPin = -1;
@@ -389,7 +446,7 @@ static int _getDrive (int pin)
 static int _pinMode (int pin, int mode)
 {
 	struct wiringPiNodeStruct *node = wiringPiNodes;
-	int fsel, shift, origPin = pin;
+	int fsel, mux, target, shift, origPin = pin;
 
 	//printf("%s\n", __func__);
 
@@ -401,13 +458,17 @@ static int _pinMode (int pin, int mode)
 		softToneStop (origPin);
 
 		fsel  = gpioToGPFSELReg(pin);
+		mux    = gpioToMuxReg(pin);
 		shift = gpioToShiftReg (pin);
+		target	= shift * 4;
 
 		switch (mode) {
 		case	INPUT:
+			*((isGpioAOPin(pin) ? gpioao : gpio) + mux)  = *((isGpioAOPin(pin) ? gpioao : gpio) + mux) & ~(0xF << target);
 			*((isGpioAOPin(pin) ? gpioao : gpio) + fsel) = (*((isGpioAOPin(pin) ? gpioao : gpio) + fsel) | (1 << shift));
 			break;
 		case	OUTPUT:
+			*((isGpioAOPin(pin) ? gpioao : gpio) + mux)  = *((isGpioAOPin(pin) ? gpioao : gpio) + mux) & ~(0xF << target);
 			*((isGpioAOPin(pin) ? gpioao : gpio) + fsel) = (*((isGpioAOPin(pin) ? gpioao : gpio) + fsel) & ~(1 << shift));
 			break;
 		case	SOFT_PWM_OUTPUT:
@@ -415,6 +476,31 @@ static int _pinMode (int pin, int mode)
 			break;
 		case	SOFT_TONE_OUTPUT:
 			softToneCreate (pin);
+			break;
+		case	PWM_OUTPUT:
+			usingGpiomemCheck("pinMode PWM");
+
+			int pwm_pin, alt;
+			pwm_pin = gpioToPwmPin(pin);
+			if( pwm_pin == -1 )
+			{
+				msg(MSG_WARN, "%s : This pin does not support hardware PWM mode.\n", __func__);
+				return -1;
+			}
+
+			alt		= pwmPinToALT[pwm_pin];
+			*((isGpioAOPin(pin) ? gpioao : gpio) + mux) = (*((isGpioAOPin(pin) ? gpioao : gpio) + mux) & ~(0xF << target)) | (alt << target);
+
+			/**
+			 * 24 MHz / 120
+			 * 200 kHz / 500
+			 * frequency of PWM: 400 Hz
+			 * period of PWM: 2500 us
+			 * duty: 50/500
+			 */
+			_pwmSetClock(120);
+			_pwmSetRange(500);
+			//_pwmWrite(origPin,50);
 			break;
 		default:
 			msg(MSG_WARN, "%s : Unknown Mode %d\n", __func__, mode);
@@ -583,6 +669,36 @@ static int _digitalWrite (int pin, int value)
 }
 
 /*----------------------------------------------------------------------------*/
+// PWM signal ___-----------___________---------------_______-----_
+//               <--value-->           <----value---->
+//               <-------range--------><-------range-------->
+/*----------------------------------------------------------------------------*/
+static int _pwmWrite (int pin, int value)
+{
+	/**
+	 * @todo Add node
+	 * struct wiringPiNodeStruct *node = wiringPiNodes;
+	 */
+
+	if (lib->mode == MODE_GPIO_SYS)
+		return -1;
+
+	if ((pin = _getModeToGpio(lib->mode, pin)) < 0)
+		return -1;
+
+	int pwm_pin = gpioToPwmPin(pin);
+	uint16_t range = pwmPinToRange[pwm_pin];
+
+	if( value > range ) {
+		value = range;
+	}
+
+	*(pwm[pwm_pin/2] + pwmPinToDutyOffset[pwm_pin]) = (value << 16) | (range - value);
+
+	return 0;
+}
+
+/*----------------------------------------------------------------------------*/
 static int _digitalWriteByte (const unsigned int value)
 {
 	union	reg_bitfield	gpiox;
@@ -612,6 +728,49 @@ static int _digitalWriteByte (const unsigned int value)
 	*(gpio + M5_GPIOX_OUTP_REG_OFFSET) = gpiox.wvalue;
 
 	return 0;
+}
+
+/*----------------------------------------------------------------------------*/
+// PWM signal ___-----------___________---------------_______-----_
+//               <--value-->           <----value---->
+//               <-------range--------><-------range-------->
+// PWM frequency == (PWM clock) / range
+/*----------------------------------------------------------------------------*/
+static void _pwmSetRange (unsigned int range)
+{
+	range = range & 0xFFFF;
+	for( int i = 0; i < 6; ++i )
+	{
+		pwmPinToRange[i] = range;
+	}
+}
+
+/*----------------------------------------------------------------------------*/
+// Internal clock == 24MHz
+// PWM clock == (Internal clock) / divisor
+// PWM frequency == (PWM clock) / range
+/*----------------------------------------------------------------------------*/
+static void _pwmSetClock (int divisor)
+{
+	if((divisor < 1) || (divisor > 128))
+	{
+		msg(MSG_ERR,
+			"Set the clock prescaler (divisor) to 1 or more and 128 or less.: %s\n",
+			strerror (errno));
+	}
+	divisor = (divisor - 1);
+
+	for(uint16_t i = 1; i < 3; ++i) {
+		*( pwm[i] + M5_PWM_MISC_REG_01_OFFSET ) = \
+			(1 << M5_PWM_1_CLK_EN) \
+			| ( divisor << M5_PWM_1_CLK_DIV0) \
+			| (1 << M5_PWM_0_CLK_EN) \
+			| ( divisor << M5_PWM_0_CLK_DIV0) \
+			| (0 << M5_PWM_1_CLK_SEL0) \
+			| (0 << M5_PWM_0_CLK_SEL0) \
+			| (1 << M5_PWM_1_EN) \
+			| (1 << M5_PWM_0_EN);
+	}
 }
 
 /*----------------------------------------------------------------------------*/
@@ -704,6 +863,12 @@ static void init_gpio_mmap (void)
 			msg(MSG_ERR, "wiringPiSetup: mmap (GPIO) failed: %s \n", strerror (errno));
 		else
 			gpioao = (uint32_t *) mapped_gpioao;
+
+		for(uint16_t i = 1; i < 3; ++i) {
+			pwm[i] = ( uint32_t * )mmap( 0, BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, M5_GPIO_PWM_BASE + (0x1000 * (2 - i)) );
+			if( ( void * )pwm == MAP_FAILED )
+				msg(MSG_ERR, "wiringPiSetup: mmap (PWM) failed: %s \n", strerror (errno));
+		}
 	}
 }
 
@@ -722,8 +887,11 @@ void init_bananapim5 (struct libodroid *libwiring)
 	libwiring->pullUpDnControl	= _pullUpDnControl;
 	libwiring->digitalRead		= _digitalRead;
 	libwiring->digitalWrite		= _digitalWrite;
+	libwiring->pwmWrite		= _pwmWrite;
 	libwiring->digitalWriteByte	= _digitalWriteByte;
 	libwiring->digitalReadByte	= _digitalReadByte;
+	libwiring->pwmSetRange		= _pwmSetRange;
+	libwiring->pwmSetClock		= _pwmSetClock;
 
 	/* specify pin base number */
 	libwiring->pinBase		= M5_GPIO_PIN_BASE;

@@ -34,13 +34,13 @@ int phy_led_test (void)
 
   wiringPiSetupPhys () ;
 
-  for (i = 0 ; i < 40 ; ++i) {
+  for (i = 0 ; i < 41 ; ++i) {
     pinMode (i, OUTPUT) ;
   }
 
   for (;;)
   {
-    for (led = 0 ; led < 40 ; ++led)
+    for (led = 0 ; led < 41 ; ++led)
     {
       digitalWrite (led, 1) ;
       delay(10);
@@ -48,7 +48,7 @@ int phy_led_test (void)
 
     delay(1000);
 
-    for (led = 0 ; led < 40 ; ++led)
+    for (led = 0 ; led < 41 ; ++led)
     {
       digitalWrite (led, 0) ;
       delay(10);

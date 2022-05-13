@@ -11,6 +11,7 @@
 /*----------------------------------------------------------------------------*/
 #define M5_GPIO_BASE			0xFF634000
 #define M5_GPIO_AO_BASE			0xFF800000
+#define M5_GPIO_PWM_BASE		0xFFD19000
 
 #define M5_GPIO_PIN_BASE		410
 
@@ -61,6 +62,26 @@
 #define M5_GPIOAO_DS_REG_B_OFFSET	0x108
 #define M5_GPIOAO_MUX_REG0_OFFSET	0x105
 #define M5_GPIOAO_MUX_REG1_OFFSET	0x106
+
+#define M5_PWM_CD_OFFSET			0x1000
+#define M5_PWM_EF_OFFSET			0
+#define M5_PWM_0_DUTY_CYCLE_OFFSET	0x00
+#define M5_PWM_1_DUTY_CYCLE_OFFSET	0x01
+#define M5_PWM_MISC_REG_01_OFFSET	0x02
+
+/// PWM_MISC_REG_CD
+#define M5_PWM_1_INV_EN			( 27 )
+#define M5_PWM_0_INV_EN			( 26 )
+#define M5_PWM_1_CLK_EN			( 23 )
+#define M5_PWM_1_CLK_DIV0		( 16 )	/// 22 ~ 16
+#define M5_PWM_0_CLK_EN			( 15 )
+#define M5_PWM_0_CLK_DIV0		( 8 )	/// 14 ~ 8
+#define M5_PWM_1_CLK_SEL0		( 6 )	/// 7 ~ 6
+#define M5_PWM_0_CLK_SEL0		( 4 )	/// 5 ~ 4
+#define M5_PWM_1_DS_EN			( 3 )
+#define M5_PWM_0_DS_EN			( 2 )
+#define M5_PWM_1_EN				( 1 )
+#define M5_PWM_0_EN				( 0 )
 
 #ifdef __cplusplus
 extern "C" {
