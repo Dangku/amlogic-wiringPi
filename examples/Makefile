@@ -38,7 +38,7 @@ LDLIBS    = -lwiringPi -lwiringPiDev -lpthread -lm -lcrypt -lrt
 # Should not alter anything below this line
 ###############################################################################
 
-SRC	=	blink.c blink8.c blink12.c					\
+SRC	=	blink.c blink-bpi.c blink8.c blink12.c				\
 		blink12drcs.c							\
 		pwm.c								\
 		speed.c wfi.c isr.c isr-osc.c					\
@@ -66,6 +66,10 @@ really-all:	$(BINS)
 blink:	blink.o
 	$Q echo [link]
 	$Q $(CC) -o $@ blink.o $(LDFLAGS) $(LDLIBS)
+
+blink-bpi: blink-bpi.o
+	$Q echo [link]
+	$Q $(CC) -o $@ blink-bpi.o $(LDFLAGS) $(LDLIBS)
 
 blinkall: blinkall.o
 	$Q echo [link]

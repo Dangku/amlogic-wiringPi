@@ -768,6 +768,7 @@ static void readallPhys(int model, int UNU rev, int physPin, const char *physNam
 			case MODEL_ODROID_N2:
 			case MODEL_ODROID_C4:
 			case MODEL_BANANAPI_M5:
+			case MODEL_BANANAPI_M2PRO:
 			case MODEL_BANANAPI_M2S:
 				printf (" | %2d | %5s", getDrive(pin), pupd[getPUPD(pin)]);
 				break;
@@ -811,6 +812,7 @@ static void readallPhys(int model, int UNU rev, int physPin, const char *physNam
 			case MODEL_ODROID_N2:
 			case MODEL_ODROID_C4:
 			case MODEL_BANANAPI_M5:
+			case MODEL_BANANAPI_M2PRO:
 			case MODEL_BANANAPI_M2S:
 				printf (" | %-5s | %-2d", pupd[getPUPD(pin)], getDrive(pin));
 				break;
@@ -1032,6 +1034,10 @@ void doReadall(int argc, char *argv[]) {
 			break;
 		case MODEL_BANANAPI_M5:
 			headerName = (isAll == FALSE) ? "--- M5 ---" : "---- Model  BANANAPI-M5 ----";
+			physNames = (char *) ((isAll == FALSE) ? physNamesBananapiM5 : physNamesBananapiM5All);
+			break;
+		case MODEL_BANANAPI_M2PRO:
+			headerName = (isAll == FALSE) ? "--- M2Pro ---" : "---- Model  BANANAPI-M2Pro ----";
 			physNames = (char *) ((isAll == FALSE) ? physNamesBananapiM5 : physNamesBananapiM5All);
 			break;
 		case MODEL_BANANAPI_M2S:

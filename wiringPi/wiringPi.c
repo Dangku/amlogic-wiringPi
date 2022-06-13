@@ -64,6 +64,7 @@ const char *piModelNames [16] =
 	"ODROID-C4",
 	"ODROID-HC4",
 	"BPI-M5",
+	"BPI-M2-Pro",
 	"BPI-M2S",
 };
 
@@ -515,6 +516,7 @@ int piGpioLayout (void) {
 			libwiring.rev = 1;
 			break;
 		case MODEL_BANANAPI_M5:
+		case MODEL_BANANAPI_M2PRO:
 			libwiring.maker = MAKER_AMLOGIC;
 			libwiring.mem = 4;
 			libwiring.rev = 1;
@@ -1252,6 +1254,7 @@ int wiringPiSetup (void)
 		init_odroidhc4(&libwiring);
 	break;
 	case MODEL_BANANAPI_M5:
+	case MODEL_BANANAPI_M2PRO:
 		init_bananapim5(&libwiring);
 	break;
 	case MODEL_BANANAPI_M2S:
