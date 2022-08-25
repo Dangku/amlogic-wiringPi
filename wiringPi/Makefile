@@ -71,7 +71,8 @@ SRC	=	wiringPi.c						\
 		odroidc4.c						\
 		odroidhc4.c						\
 		bananapim5.c						\
-		bananapim2s.c
+		bananapim2s.c						\
+		bananapicm4.c
 
 HEADERS =	$(shell ls *.h)
 
@@ -188,3 +189,4 @@ odroidc4.o  : wiringPi.h odroidc4.h
 odroidhc4.o  : wiringPi.h odroidc4.h
 bananapim5.o : wiringPi.h bananapim5.h
 bananapim2s.o : wiringPi.h bananapim2s.h
+bananapicm4.o : wiringPi.h bananapicm4.h

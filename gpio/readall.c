@@ -715,6 +715,68 @@ static const char *physNamesBananapiM2S [64] =
 };
 
 /*----------------------------------------------------------------------------*/
+static const char *physNamesBananapiCM4All [64] =
+{
+        NULL,
+
+        "    3.3V", "5V      ",
+        "   SDA.2", "5V      ",
+        "   SCL.2", "GND(0V) ",
+        "GPIO.470", "TxD2    ",
+        " GND(0V)", "RxD2    ",
+        "GPIO.469", "GPIO.461",
+        "GPIO.466", "GND(0V) ",
+        "GPIO.465", "GPIO.473",
+        "    3.3V", "GPIO.472",
+        "    MOSI", "GND(0V) ",
+        "    MISO", "GPIO.471",
+        "    SLCK", "SS      ",
+        " GND(0V)", "GPIO.501",
+        "GPIO.474", "GPIO.475",
+        "GPIO.431", "GND(0V) ",
+        "GPIO.432", "GPIO.506",
+        "GPIO.467", "GND(0V) ",
+        "GPIO.462", "GPIO.507",
+        "GPIO.460", "GPIO.464",
+        " GND(0V)", "GPIO.463",
+
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,
+};
+
+/*----------------------------------------------------------------------------*/
+static const char *physNamesBananapiCM4 [64] =
+{
+        NULL,
+
+        "   3.3V", "5V     ",
+        "  SDA.2", "5V     ",
+        "  SCL.2", "0V     ",
+        " IO.470", "TxD2   ",
+        "     0V", "RxD2   ",
+        " IO.469", "IO.461 ",
+        " IO.466", "0V     ",
+        " IO.465", "IO.473 ",
+        "   3.3V", "IO.472 ",
+        "   MOSI", "0V     ",
+        "   MISO", "IO.471 ",
+        "   SLCK", "SS     ",
+        "     0V", "IO.501 ",
+        " IO.474", "IO.475 ",
+        " IO.431", "0V     ",
+        " IO.432", "IO.506 ",
+        " IO.467", "0V     ",
+        " IO.462", "IO.507 ",
+        " IO.460", "IO.464 ",
+        "     0V", "IO.463 ",
+
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,
+};
+
+/*----------------------------------------------------------------------------*/
 static void readallPhys(int model, int UNU rev, int physPin, const char *physNames[], int isAll) {
 	int pin ;
 
@@ -770,6 +832,7 @@ static void readallPhys(int model, int UNU rev, int physPin, const char *physNam
 			case MODEL_BANANAPI_M5:
 			case MODEL_BANANAPI_M2PRO:
 			case MODEL_BANANAPI_M2S:
+			case MODEL_BANANAPI_CM4:
 				printf (" | %2d | %5s", getDrive(pin), pupd[getPUPD(pin)]);
 				break;
 			default:
@@ -814,6 +877,7 @@ static void readallPhys(int model, int UNU rev, int physPin, const char *physNam
 			case MODEL_BANANAPI_M5:
 			case MODEL_BANANAPI_M2PRO:
 			case MODEL_BANANAPI_M2S:
+			case MODEL_BANANAPI_CM4:
 				printf (" | %-5s | %-2d", pupd[getPUPD(pin)], getDrive(pin));
 				break;
 			default:
@@ -1043,6 +1107,10 @@ void doReadall(int argc, char *argv[]) {
 		case MODEL_BANANAPI_M2S:
 			headerName = (isAll == FALSE) ? "--- M2S ---" : "---- Model  BANANAPI-M2S ----";
 			physNames = (char *) ((isAll == FALSE) ? physNamesBananapiM2S : physNamesBananapiM2SAll);
+			break;
+		case MODEL_BANANAPI_CM4:
+			headerName = (isAll == FALSE) ? "--- CM4 ---" : "---- Model  BANANAPI-CM4 ----";
+			physNames = (char *) ((isAll == FALSE) ? physNamesBananapiCM4 : physNamesBananapiCM4All);
 			break;
 		default:
 			printf("Oops - unknown model: %d\n", model);

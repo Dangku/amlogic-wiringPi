@@ -229,6 +229,7 @@ static void doI2Cdetect (UNU int argc, char *argv [])
 			port = 2;
 		break;
 	case MODEL_BANANAPI_M2S:
+	case MODEL_BANANAPI_CM4:
 		port = 2;
 		break;
 	default:
