@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*/
 //
 //
-//	WiringPi BANANAPI-cm4 Board Control file (AMLogic 64Bits Platform)
+//	WiringPi BANANAPI-rpicm4 Board Control file (AMLogic 64Bits Platform)
 //
 //
 /*----------------------------------------------------------------------------*/
@@ -22,24 +22,30 @@
 
 /*----------------------------------------------------------------------------*/
 #include "wiringPi.h"
-#include "bananapicm4.h"
+#include "bananapirpicm4.h"
 
 /*----------------------------------------------------------------------------*/
 // wiringPi gpio map define
 /*----------------------------------------------------------------------------*/
 static const int pinToGpio[64] = {
 	// wiringPi number to native gpio number
-	432, 461,	//  0 |  1 : GPIOH.5, GPIOA.1
-	431, 501,	//  2 |  3 : GPIOH.4, GPIOAO.5
-	460, 462,	//  4 |  5 : GPIOA.0, GPIOA.2
-	467, 506,	//  6 |  7 : GPIOA.7, GPIOAO.10
+	469, 461,	//  0 |  1 : GPIOA.9, GPIOA.1
+	466, 465,	//  2 |  3 : GPIOA.6, GPIOA.5
+	473, 472,	//  4 |  5 : GPIOA.13, GPIOA.12
+	471, 470,	//  6 |  7 : GPIOA.11, GPIOA.10
 	493, 494,	//  8 |  9 : GPIOX.17(I2C-2_SDA), GPIOX.18(I2C-2_SCL)
-	486, 463,	// 10 | 11 : GPIOX.10(SPI_SS), GPIOA.3
+	486, 501,	// 10 | 11 : GPIOX.10(SPI_SS), GPIOAO.5
 	484, 485,	// 12 | 13 : GPIOX.8(SPI_MOSI,PWM_C), GPIOX.9(SPI_MISO)
 	487, 482,	// 14 | 15 : GPIOX.11(SPI_CLK), GPIOX.6(UART_B_TX,PWM_D)
 	483,  -1,	// 16 | 17 : GPIOX.7(UART_B_RX,PWM_F),
+	 -1,  -1,	// 18 | 19 :
+	 -1, 431,	// 20 | 21 : , GPIOH.4
+	432, 467,	// 22 | 23 : GPIOH.5, GPIOA.7
+	462, 460,	// 24 | 25 : GPIOA.2, GPIOA.0
+	506, 507,	// 26 | 27 : GPIOAO.10, GPIOAO.11
+	464, 463,	// 28 | 29 : GPIOA.4, GPIOA.3
+	474, 475,	// 30 | 31 : GPIOA.14(I2C-3_SDA), GPIOA_15(I2C3_SCL)
 	// Padding:
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,         // 18...31
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,	// 32...47
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,	// 48...63
 };
@@ -50,27 +56,32 @@ static const int phyToGpio[64] = {
 	 -1,  -1,	//  1 |  2 : 3.3V, 5.0V
 	493,  -1,	//  3 |  4 : GPIOX.17(I2C-2_SDA), 5.0V
 	494,  -1,	//  5 |  6 : GPIOX.18(I2C-2_SCL), GND
-	506, 482,	//  7 |  8 : GPIOAO.10, GPIOX.6(UART_B_TX,PWM_D)
+	470, 482,	//  7 |  8 : GPIOA.10, GPIOX.6(UART_B_TX,PWM_D)
 	 -1, 483,	//  9 | 10 : GND, GPIOX.7(UART_B_RX,PWM_F)
-	432, 461,	// 11 | 12 : GPIOH.5, GPIOA.1
-	431,  -1,	// 13 | 14 : GPIOH.4, GND
-	501, 460,	// 15 | 16 : GPIOAO.5, GPIOA.0
-	 -1, 462,	// 17 | 18 : 3.3V, GPIOA.2
+	469, 461,	// 11 | 12 : GPIOA.9, GPIOA.1
+	466,  -1,	// 13 | 14 : GPIOA.6, GND
+	465, 473,	// 15 | 16 : GPIOA.5, GPIOA.13
+	 -1, 472,	// 17 | 18 : 3.3V, GPIOA.12
 	484,  -1,	// 19 | 20 : GPIOX.8(SPI_MOSI,PWM_C), GND
-	485, 467,	// 21 | 22 : GPIOX.9(SPI_MISO), GPIOA.7
+	485, 471,	// 21 | 22 : GPIOX.9(SPI_MISO), GPIOA.11
 	487, 486,	// 23 | 24 : GPIOX.11(SPI_CLK), GPIOX.10(SPI_SS)
-	 -1, 463,	// 25 | 26 : GND, GPIOA.3
+	 -1, 501,	// 25 | 26 : GND, GPIOAO.5
+	474, 475,	// 27 | 28 : GPIOA_14(I2C-3_SDA), GPIOA_15(I2C-3_SCL)
+	431,  -1,	// 29 | 30 : GPIOH.4, GND
+	432, 506,	// 31 | 32 : GPIOH.5, GPIOAO.10
+	467,  -1,	// 33 | 34 : GPIOA.7, GND
+	462, 507,	// 35 | 36 : GPIOA.2, GPIOAO.11
+	460, 464,	// 37 | 38 : GPIOA.0, GPIOA.4
+	 -1, 463,	// 39 | 40 : GND, GPIOA.3
 	// Not used
-	-1, -1, -1, -1, -1, -1, -1, -1, // 27...34
-	-1, -1, -1, -1, -1, -1,         // 35...40
 	-1, -1, -1, -1, -1, -1, -1, -1,	// 41...48
 	-1, -1, -1, -1, -1, -1, -1, -1,	// 49...56
 	-1, -1, -1, -1, -1, -1, -1	// 57...63
 };
 
 static const int8_t _gpioToPwmPin [] = {
-			// (native gpio number - CM4_GPIOA_PIN_START) to PWM pin number
-	 -1,		// GPIOA.0			0 + CM4_GPIOA_PIN_START(460)
+			// (native gpio number - RPICM4_GPIOA_PIN_START) to PWM pin number
+	 -1,		// GPIOA.0			0 + RPICM4_GPIOA_PIN_START(460)
 	 -1,  -1,	// GPIOA.1			1	| 2		GPIOA.2
 	 -1,  -1,	// GPIOA.3			3	| 4		GPIOA.4
 	 -1,  -1,	// GPIOA.5			5	| 6		GPIOA.6
@@ -110,9 +121,9 @@ static uint16_t pwmPinToRange [] = {
 };
 
 static const uint16_t pwmPinToDutyOffset [] = {
-	CM4_PWM_0_DUTY_CYCLE_OFFSET, CM4_PWM_1_DUTY_CYCLE_OFFSET,	// A, B
-	CM4_PWM_0_DUTY_CYCLE_OFFSET, CM4_PWM_1_DUTY_CYCLE_OFFSET,	// C 481 GPIOX.5 , D 482 GPIOX.6
-	CM4_PWM_0_DUTY_CYCLE_OFFSET, CM4_PWM_1_DUTY_CYCLE_OFFSET	// E 492 GPIOX.16, F 483 GPIOX.7
+	RPICM4_PWM_0_DUTY_CYCLE_OFFSET, RPICM4_PWM_1_DUTY_CYCLE_OFFSET,	// A, B
+	RPICM4_PWM_0_DUTY_CYCLE_OFFSET, RPICM4_PWM_1_DUTY_CYCLE_OFFSET,	// C 481 GPIOX.5 , D 482 GPIOX.6
+	RPICM4_PWM_0_DUTY_CYCLE_OFFSET, RPICM4_PWM_1_DUTY_CYCLE_OFFSET	// E 492 GPIOX.16, F 483 GPIOX.7
 };
 
 /*----------------------------------------------------------------------------*/
@@ -134,7 +145,7 @@ static struct libodroid	*lib = NULL;
 // Function prototype define
 /*----------------------------------------------------------------------------*/
 static int	isGpioAOPin	(int pin);
-static int	isBananapiCM4Pin (int pin);
+static int	isBananapiRPICM4Pin (int pin);
 static int	gpioToGPSETReg	(int pin);
 static int	gpioToGPLEVReg	(int pin);
 static int	gpioToPUENReg	(int pin);
@@ -168,7 +179,7 @@ static void		_pwmSetClock		(int divisor);
 /*----------------------------------------------------------------------------*/
 static 	void init_gpio_mmap	(void);
 
-void init_bananapicm4 	(struct libodroid *libwiring);
+void init_bananapirpicm4 	(struct libodroid *libwiring);
 
 /*----------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------*/
@@ -178,15 +189,15 @@ void init_bananapicm4 	(struct libodroid *libwiring);
 /*----------------------------------------------------------------------------*/
 static int isGpioAOPin(int pin)
 {
-	if (pin >= CM4_GPIOAO_PIN_START && pin <= CM4_GPIOAO_PIN_END)
+	if (pin >= RPICM4_GPIOAO_PIN_START && pin <= RPICM4_GPIOAO_PIN_END)
 		return 1;
 	else
 		return 0;
 }
 
-static int isBananapiCM4Pin(int pin)
+static int isBananapiRPICM4Pin(int pin)
 {
-	if (pin >= CM4_GPIO_PIN_BASE && pin <= CM4_GPIOAO_PIN_END)
+	if (pin >= RPICM4_GPIO_PIN_BASE && pin <= RPICM4_GPIOAO_PIN_END)
 		return 1;
 	else
 		return 0;
@@ -194,14 +205,14 @@ static int isBananapiCM4Pin(int pin)
 
 static int gpioToGPSETReg (int pin)
 {
-	if (pin >= CM4_GPIOH_PIN_START && pin <= CM4_GPIOH_PIN_END)
-		return  CM4_GPIOH_OUTP_REG_OFFSET;
-	if (pin >= CM4_GPIOA_PIN_START && pin <= CM4_GPIOA_PIN_END)
-		return  CM4_GPIOA_OUTP_REG_OFFSET;
-	if (pin >= CM4_GPIOX_PIN_START && pin <= CM4_GPIOX_PIN_END)
-		return  CM4_GPIOX_OUTP_REG_OFFSET;
-	if (pin >= CM4_GPIOAO_PIN_START && pin <= CM4_GPIOAO_PIN_END)
-		return  CM4_GPIOAO_OUTP_REG_OFFSET;
+	if (pin >= RPICM4_GPIOH_PIN_START && pin <= RPICM4_GPIOH_PIN_END)
+		return  RPICM4_GPIOH_OUTP_REG_OFFSET;
+	if (pin >= RPICM4_GPIOA_PIN_START && pin <= RPICM4_GPIOA_PIN_END)
+		return  RPICM4_GPIOA_OUTP_REG_OFFSET;
+	if (pin >= RPICM4_GPIOX_PIN_START && pin <= RPICM4_GPIOX_PIN_END)
+		return  RPICM4_GPIOX_OUTP_REG_OFFSET;
+	if (pin >= RPICM4_GPIOAO_PIN_START && pin <= RPICM4_GPIOAO_PIN_END)
+		return  RPICM4_GPIOAO_OUTP_REG_OFFSET;
 	return	-1;
 }
 
@@ -212,14 +223,14 @@ static int gpioToGPSETReg (int pin)
 /*----------------------------------------------------------------------------*/
 static int gpioToGPLEVReg (int pin)
 {
-	if (pin >= CM4_GPIOH_PIN_START && pin <= CM4_GPIOH_PIN_END)
-		return  CM4_GPIOH_INP_REG_OFFSET;
-	if (pin >= CM4_GPIOA_PIN_START && pin <= CM4_GPIOA_PIN_END)
-		return  CM4_GPIOA_INP_REG_OFFSET;
-	if (pin >= CM4_GPIOX_PIN_START && pin <= CM4_GPIOX_PIN_END)
-		return  CM4_GPIOX_INP_REG_OFFSET;
-	if (pin >= CM4_GPIOAO_PIN_START && pin <= CM4_GPIOAO_PIN_END)
-		return  CM4_GPIOAO_INP_REG_OFFSET;
+	if (pin >= RPICM4_GPIOH_PIN_START && pin <= RPICM4_GPIOH_PIN_END)
+		return  RPICM4_GPIOH_INP_REG_OFFSET;
+	if (pin >= RPICM4_GPIOA_PIN_START && pin <= RPICM4_GPIOA_PIN_END)
+		return  RPICM4_GPIOA_INP_REG_OFFSET;
+	if (pin >= RPICM4_GPIOX_PIN_START && pin <= RPICM4_GPIOX_PIN_END)
+		return  RPICM4_GPIOX_INP_REG_OFFSET;
+	if (pin >= RPICM4_GPIOAO_PIN_START && pin <= RPICM4_GPIOAO_PIN_END)
+		return  RPICM4_GPIOAO_INP_REG_OFFSET;
 	return	-1;
 }
 
@@ -230,14 +241,14 @@ static int gpioToGPLEVReg (int pin)
 /*----------------------------------------------------------------------------*/
 static int gpioToPUENReg (int pin)
 {
-	if (pin >= CM4_GPIOH_PIN_START && pin <= CM4_GPIOH_PIN_END)
-		return  CM4_GPIOH_PUEN_REG_OFFSET;
-	if (pin >= CM4_GPIOA_PIN_START && pin <= CM4_GPIOA_PIN_END)
-		return  CM4_GPIOA_PUEN_REG_OFFSET;
-	if (pin >= CM4_GPIOX_PIN_START && pin <= CM4_GPIOX_PIN_END)
-		return  CM4_GPIOX_PUEN_REG_OFFSET;
-	if (pin >= CM4_GPIOAO_PIN_START && pin <= CM4_GPIOAO_PIN_END)
-		return  CM4_GPIOAO_PUEN_REG_OFFSET;
+	if (pin >= RPICM4_GPIOH_PIN_START && pin <= RPICM4_GPIOH_PIN_END)
+		return  RPICM4_GPIOH_PUEN_REG_OFFSET;
+	if (pin >= RPICM4_GPIOA_PIN_START && pin <= RPICM4_GPIOA_PIN_END)
+		return  RPICM4_GPIOA_PUEN_REG_OFFSET;
+	if (pin >= RPICM4_GPIOX_PIN_START && pin <= RPICM4_GPIOX_PIN_END)
+		return  RPICM4_GPIOX_PUEN_REG_OFFSET;
+	if (pin >= RPICM4_GPIOAO_PIN_START && pin <= RPICM4_GPIOAO_PIN_END)
+		return  RPICM4_GPIOAO_PUEN_REG_OFFSET;
 	return	-1;
 }
 
@@ -248,14 +259,14 @@ static int gpioToPUENReg (int pin)
 /*----------------------------------------------------------------------------*/
 static int gpioToPUPDReg (int pin)
 {
-	if (pin >= CM4_GPIOH_PIN_START && pin <= CM4_GPIOH_PIN_END)
-		return  CM4_GPIOH_PUPD_REG_OFFSET;
-	if (pin >= CM4_GPIOA_PIN_START && pin <= CM4_GPIOA_PIN_END)
-		return  CM4_GPIOA_PUPD_REG_OFFSET;
-	if (pin >= CM4_GPIOX_PIN_START && pin <= CM4_GPIOX_PIN_END)
-		return	CM4_GPIOX_PUPD_REG_OFFSET;
-	if (pin >= CM4_GPIOAO_PIN_START && pin <= CM4_GPIOAO_PIN_END)
-		return	CM4_GPIOAO_PUPD_REG_OFFSET;
+	if (pin >= RPICM4_GPIOH_PIN_START && pin <= RPICM4_GPIOH_PIN_END)
+		return  RPICM4_GPIOH_PUPD_REG_OFFSET;
+	if (pin >= RPICM4_GPIOA_PIN_START && pin <= RPICM4_GPIOA_PIN_END)
+		return  RPICM4_GPIOA_PUPD_REG_OFFSET;
+	if (pin >= RPICM4_GPIOX_PIN_START && pin <= RPICM4_GPIOX_PIN_END)
+		return	RPICM4_GPIOX_PUPD_REG_OFFSET;
+	if (pin >= RPICM4_GPIOAO_PIN_START && pin <= RPICM4_GPIOAO_PIN_END)
+		return	RPICM4_GPIOAO_PUPD_REG_OFFSET;
 	return	-1;
 }
 
@@ -266,14 +277,14 @@ static int gpioToPUPDReg (int pin)
 /*----------------------------------------------------------------------------*/
 static int gpioToShiftReg (int pin)
 {
-	if (pin >= CM4_GPIOH_PIN_START && pin <= CM4_GPIOH_PIN_END)
-		return  pin - CM4_GPIOH_PIN_START;
-	if (pin >= CM4_GPIOA_PIN_START && pin <= CM4_GPIOA_PIN_END)
-		return  pin - CM4_GPIOA_PIN_START;
-	if (pin >= CM4_GPIOX_PIN_START && pin <= CM4_GPIOX_PIN_END)
-		return  pin - CM4_GPIOX_PIN_START;
-	if (pin >= CM4_GPIOAO_PIN_START && pin <= CM4_GPIOAO_PIN_END)
-		return  pin - CM4_GPIOAO_PIN_START;
+	if (pin >= RPICM4_GPIOH_PIN_START && pin <= RPICM4_GPIOH_PIN_END)
+		return  pin - RPICM4_GPIOH_PIN_START;
+	if (pin >= RPICM4_GPIOA_PIN_START && pin <= RPICM4_GPIOA_PIN_END)
+		return  pin - RPICM4_GPIOA_PIN_START;
+	if (pin >= RPICM4_GPIOX_PIN_START && pin <= RPICM4_GPIOX_PIN_END)
+		return  pin - RPICM4_GPIOX_PIN_START;
+	if (pin >= RPICM4_GPIOAO_PIN_START && pin <= RPICM4_GPIOAO_PIN_END)
+		return  pin - RPICM4_GPIOAO_PIN_START;
 	return	-1;
 }
 
@@ -284,14 +295,14 @@ static int gpioToShiftReg (int pin)
 /*----------------------------------------------------------------------------*/
 static int gpioToGPFSELReg (int pin)
 {
-	if (pin >= CM4_GPIOH_PIN_START && pin <= CM4_GPIOH_PIN_END)
-		return  CM4_GPIOH_FSEL_REG_OFFSET;
-	if (pin >= CM4_GPIOA_PIN_START && pin <= CM4_GPIOA_PIN_END)
-		return  CM4_GPIOA_FSEL_REG_OFFSET;
-	if (pin >= CM4_GPIOX_PIN_START && pin <= CM4_GPIOX_PIN_END)
-		return  CM4_GPIOX_FSEL_REG_OFFSET;
-	if (pin >= CM4_GPIOAO_PIN_START && pin <= CM4_GPIOAO_PIN_END)
-		return  CM4_GPIOAO_FSEL_REG_OFFSET;
+	if (pin >= RPICM4_GPIOH_PIN_START && pin <= RPICM4_GPIOH_PIN_END)
+		return  RPICM4_GPIOH_FSEL_REG_OFFSET;
+	if (pin >= RPICM4_GPIOA_PIN_START && pin <= RPICM4_GPIOA_PIN_END)
+		return  RPICM4_GPIOA_FSEL_REG_OFFSET;
+	if (pin >= RPICM4_GPIOX_PIN_START && pin <= RPICM4_GPIOX_PIN_END)
+		return  RPICM4_GPIOX_FSEL_REG_OFFSET;
+	if (pin >= RPICM4_GPIOAO_PIN_START && pin <= RPICM4_GPIOAO_PIN_END)
+		return  RPICM4_GPIOAO_FSEL_REG_OFFSET;
 	return	-1;
 }
 
@@ -302,16 +313,16 @@ static int gpioToGPFSELReg (int pin)
 /*----------------------------------------------------------------------------*/
 static int gpioToDSReg (int pin)
 {
-	if (pin >= CM4_GPIOH_PIN_START && pin <= CM4_GPIOH_PIN_END)
-		return  CM4_GPIOH_DS_REG_3A_OFFSET;
-	if (pin >= CM4_GPIOA_PIN_START && pin <= CM4_GPIOA_PIN_END)
-		return  CM4_GPIOA_DS_REG_5A_OFFSET;
-	if (pin >= CM4_GPIOX_PIN_START && pin <= CM4_GPIOX_PIN_MID)
-		return  CM4_GPIOX_DS_REG_2A_OFFSET;
-	if (pin > CM4_GPIOX_PIN_MID && pin <= CM4_GPIOX_PIN_END)
-		return  CM4_GPIOX_DS_REG_2B_OFFSET;
-	if (pin >= CM4_GPIOAO_PIN_START && pin <= CM4_GPIOAO_PIN_END)
-		return  CM4_GPIOAO_DS_REG_A_OFFSET;
+	if (pin >= RPICM4_GPIOH_PIN_START && pin <= RPICM4_GPIOH_PIN_END)
+		return  RPICM4_GPIOH_DS_REG_3A_OFFSET;
+	if (pin >= RPICM4_GPIOA_PIN_START && pin <= RPICM4_GPIOA_PIN_END)
+		return  RPICM4_GPIOA_DS_REG_5A_OFFSET;
+	if (pin >= RPICM4_GPIOX_PIN_START && pin <= RPICM4_GPIOX_PIN_MID)
+		return  RPICM4_GPIOX_DS_REG_2A_OFFSET;
+	if (pin > RPICM4_GPIOX_PIN_MID && pin <= RPICM4_GPIOX_PIN_END)
+		return  RPICM4_GPIOX_DS_REG_2B_OFFSET;
+	if (pin >= RPICM4_GPIOAO_PIN_START && pin <= RPICM4_GPIOAO_PIN_END)
+		return  RPICM4_GPIOAO_DS_REG_A_OFFSET;
 	return	-1;
 }
 
@@ -323,22 +334,22 @@ static int gpioToDSReg (int pin)
 static int gpioToMuxReg (int pin)
 {
 	switch (pin) {
-	case	CM4_GPIOH_PIN_START	...CM4_GPIOH_PIN_END:
-		return  CM4_GPIOH_MUX_B_REG_OFFSET;
-	case	CM4_GPIOA_PIN_START	...CM4_GPIOA_PIN_START + 7:
-		return  CM4_GPIOA_MUX_D_REG_OFFSET;
-	case	CM4_GPIOA_PIN_START + 8	...CM4_GPIOA_PIN_END:
-		return  CM4_GPIOA_MUX_E_REG_OFFSET;
-	case	CM4_GPIOX_PIN_START	...CM4_GPIOX_PIN_START + 7:
-		return  CM4_GPIOX_MUX_3_REG_OFFSET;
-	case	CM4_GPIOX_PIN_START + 8	...CM4_GPIOX_PIN_START + 15:
-		return  CM4_GPIOX_MUX_4_REG_OFFSET;
-	case	CM4_GPIOX_PIN_START + 16	...CM4_GPIOX_PIN_END:
-		return  CM4_GPIOX_MUX_5_REG_OFFSET;
-	case	CM4_GPIOAO_PIN_START	...CM4_GPIOAO_PIN_START + 7:
-		return  CM4_GPIOAO_MUX_REG0_OFFSET;
-	case	CM4_GPIOAO_PIN_START + 8	...CM4_GPIOAO_PIN_START + 11:
-		return  CM4_GPIOAO_MUX_REG1_OFFSET;
+	case	RPICM4_GPIOH_PIN_START	...RPICM4_GPIOH_PIN_END:
+		return  RPICM4_GPIOH_MUX_B_REG_OFFSET;
+	case	RPICM4_GPIOA_PIN_START	...RPICM4_GPIOA_PIN_START + 7:
+		return  RPICM4_GPIOA_MUX_D_REG_OFFSET;
+	case	RPICM4_GPIOA_PIN_START + 8	...RPICM4_GPIOA_PIN_END:
+		return  RPICM4_GPIOA_MUX_E_REG_OFFSET;
+	case	RPICM4_GPIOX_PIN_START	...RPICM4_GPIOX_PIN_START + 7:
+		return  RPICM4_GPIOX_MUX_3_REG_OFFSET;
+	case	RPICM4_GPIOX_PIN_START + 8	...RPICM4_GPIOX_PIN_START + 15:
+		return  RPICM4_GPIOX_MUX_4_REG_OFFSET;
+	case	RPICM4_GPIOX_PIN_START + 16	...RPICM4_GPIOX_PIN_END:
+		return  RPICM4_GPIOX_MUX_5_REG_OFFSET;
+	case	RPICM4_GPIOAO_PIN_START	...RPICM4_GPIOAO_PIN_START + 7:
+		return  RPICM4_GPIOAO_MUX_REG0_OFFSET;
+	case	RPICM4_GPIOAO_PIN_START + 8	...RPICM4_GPIOAO_PIN_START + 11:
+		return  RPICM4_GPIOAO_MUX_REG1_OFFSET;
 	default:
 		return -1;
 	}
@@ -347,7 +358,7 @@ static int gpioToMuxReg (int pin)
 /*----------------------------------------------------------------------------*/
 static int gpioToPwmPin (int pin)
 {
-	return _gpioToPwmPin[pin - CM4_GPIOA_PIN_START];
+	return _gpioToPwmPin[pin - RPICM4_GPIOA_PIN_START];
 }
 
 static int _getModeToGpio (int mode, int pin)
@@ -357,7 +368,7 @@ static int _getModeToGpio (int mode, int pin)
 	switch (mode) {
 	/* Native gpio number */
 	case	MODE_GPIO:
-		retPin = isBananapiCM4Pin(pin) ? pin : -1;
+		retPin = isBananapiRPICM4Pin(pin) ? pin : -1;
 		break;
 	/* Native gpio number for sysfs */
 	case	MODE_GPIO_SYS:
@@ -398,7 +409,7 @@ static int _setDrive (int pin, int value)
 	ds    = gpioToDSReg(pin);
 	shift = gpioToShiftReg(pin);
 	
-	if ( pin > CM4_GPIOX_PIN_MID && pin <= CM4_GPIOX_PIN_END)
+	if ( pin > RPICM4_GPIOX_PIN_MID && pin <= RPICM4_GPIOX_PIN_END)
 		shift = (shift - 16) * 2;
 	else
 		shift = shift * 2;
@@ -423,7 +434,7 @@ static int _getDrive (int pin)
 	ds    = gpioToDSReg(pin);
 	shift = gpioToShiftReg(pin);
 	
-	if ( pin > CM4_GPIOX_PIN_MID && pin <= CM4_GPIOX_PIN_END)
+	if ( pin > RPICM4_GPIOX_PIN_MID && pin <= RPICM4_GPIOX_PIN_END)
 		shift = (shift - 16) * 2;
 	else
 		shift = shift * 2;
@@ -496,7 +507,7 @@ static int _pinMode (int pin, int mode)
 			return -1;
 		}
 	} else {
-		//printf("%s, not bananapi cm4 pins\n", __func__);
+		//printf("%s, not bananapi rpicm4 pins\n", __func__);
 		if ((node = wiringPiFindNode (origPin)) != NULL)
 			node->pinMode (node, origPin, mode) ;	
 	}
@@ -579,7 +590,7 @@ static int _pullUpDnControl (int pin, int pud)
 			*((isGpioAOPin(pin) ? gpioao : gpio) + gpioToPUENReg(pin)) =
 				(*((isGpioAOPin(pin) ? gpioao : gpio) + gpioToPUENReg(pin)) & ~(1 << shift));
 	} else {
-		//printf("%s, not bananapi cm4 pins, pin = %d, pud = %d\n", __func__, origPin, pud);
+		//printf("%s, not bananapi rpicm4 pins, pin = %d, pud = %d\n", __func__, origPin, pud);
 		if ((node = wiringPiFindNode (origPin)) != NULL)
 			node->pullUpDnControl (node, origPin, pud) ;
 	}
@@ -695,26 +706,26 @@ static int _digitalWriteByte (const unsigned int value)
 	if (lib->mode == MODE_GPIO_SYS)
 		return -1;
 
-	gpiox.wvalue = *(gpio + CM4_GPIOX_INP_REG_OFFSET);
+	gpiox.wvalue = *(gpio + RPICM4_GPIOX_INP_REG_OFFSET);
 
-	/* Wiring PI GPIO0 = CM4 GPIOX.3 */
+	/* Wiring PI GPIO0 = RPICM4 GPIOX.3 */
 	gpiox.bits.bit3 = (value & 0x01);
-	/* Wiring PI GPIO1 = CM4 GPIOX.16 */
+	/* Wiring PI GPIO1 = RPICM4 GPIOX.16 */
 	gpiox.bits.bit16 = (value & 0x02);
-	/* Wiring PI GPIO2 = CM4 GPIOX.4 */
+	/* Wiring PI GPIO2 = RPICM4 GPIOX.4 */
 	gpiox.bits.bit4 = (value & 0x04);
-	/* Wiring PI GPIO3 = CM4 GPIOX.7 */
+	/* Wiring PI GPIO3 = RPICM4 GPIOX.7 */
 	gpiox.bits.bit7 = (value & 0x08);
-	/* Wiring PI GPIO4 = CM4 GPIOX.0 */
+	/* Wiring PI GPIO4 = RPICM4 GPIOX.0 */
 	gpiox.bits.bit0 = (value & 0x10);
-	/* Wiring PI GPIO5 = CM4 GPIOX.1 */
+	/* Wiring PI GPIO5 = RPICM4 GPIOX.1 */
 	gpiox.bits.bit1 = (value & 0x20);
-	/* Wiring PI GPIO6 = CM4 GPIOX.2 */
+	/* Wiring PI GPIO6 = RPICM4 GPIOX.2 */
 	gpiox.bits.bit2 = (value & 0x40);
-	/* Wiring PI GPIO7 = CM4 GPIOX.5 */
+	/* Wiring PI GPIO7 = RPICM4 GPIOX.5 */
 	gpiox.bits.bit5 = (value & 0x80);
 
-	*(gpio + CM4_GPIOX_OUTP_REG_OFFSET) = gpiox.wvalue;
+	*(gpio + RPICM4_GPIOX_OUTP_REG_OFFSET) = gpiox.wvalue;
 
 	return 0;
 }
@@ -750,15 +761,15 @@ static void _pwmSetClock (int divisor)
 	divisor = (divisor - 1);
 
 	for(uint16_t i = 1; i < 3; ++i) {
-		*( pwm[i] + CM4_PWM_MISC_REG_01_OFFSET ) = \
-			(1 << CM4_PWM_1_CLK_EN) \
-			| ( divisor << CM4_PWM_1_CLK_DIV0) \
-			| (1 << CM4_PWM_0_CLK_EN) \
-			| ( divisor << CM4_PWM_0_CLK_DIV0) \
-			| (0 << CM4_PWM_1_CLK_SEL0) \
-			| (0 << CM4_PWM_0_CLK_SEL0) \
-			| (1 << CM4_PWM_1_EN) \
-			| (1 << CM4_PWM_0_EN);
+		*( pwm[i] + RPICM4_PWM_MISC_REG_01_OFFSET ) = \
+			(1 << RPICM4_PWM_1_CLK_EN) \
+			| ( divisor << RPICM4_PWM_1_CLK_DIV0) \
+			| (1 << RPICM4_PWM_0_CLK_EN) \
+			| ( divisor << RPICM4_PWM_0_CLK_DIV0) \
+			| (0 << RPICM4_PWM_1_CLK_SEL0) \
+			| (0 << RPICM4_PWM_0_CLK_SEL0) \
+			| (1 << RPICM4_PWM_1_EN) \
+			| (1 << RPICM4_PWM_0_EN);
 	}
 }
 
@@ -771,30 +782,30 @@ static unsigned int _digitalReadByte (void)
 	if (lib->mode == MODE_GPIO_SYS)
 		return -1;
 
-	gpiox.wvalue = *(gpio + CM4_GPIOX_INP_REG_OFFSET);
+	gpiox.wvalue = *(gpio + RPICM4_GPIOX_INP_REG_OFFSET);
 
-	/* Wiring PI GPIO0 = CM4 GPIOX.3 */
+	/* Wiring PI GPIO0 = RPICM4 GPIOX.3 */
 	if (gpiox.bits.bit3)
 		value |= 0x01;
-	/* Wiring PI GPIO1 = CM4 GPIOX.16 */
+	/* Wiring PI GPIO1 = RPICM4 GPIOX.16 */
 	if (gpiox.bits.bit16)
 		value |= 0x02;
-	/* Wiring PI GPIO2 = CM4 GPIOX.4 */
+	/* Wiring PI GPIO2 = RPICM4 GPIOX.4 */
 	if (gpiox.bits.bit4)
 		value |= 0x04;
-	/* Wiring PI GPIO3 = CM4 GPIOX.7 */
+	/* Wiring PI GPIO3 = RPICM4 GPIOX.7 */
 	if (gpiox.bits.bit7)
 		value |= 0x08;
-	/* Wiring PI GPIO4 = CM4 GPIOX.0 */
+	/* Wiring PI GPIO4 = RPICM4 GPIOX.0 */
 	if (gpiox.bits.bit0)
 		value |= 0x10;
-	/* Wiring PI GPIO5 = CM4 GPIOX.1 */
+	/* Wiring PI GPIO5 = RPICM4 GPIOX.1 */
 	if (gpiox.bits.bit1)
 		value |= 0x20;
-	/* Wiring PI GPIO6 = CM4 GPIOX.2 */
+	/* Wiring PI GPIO6 = RPICM4 GPIOX.2 */
 	if (gpiox.bits.bit2)
 		value |= 0x40;
-	/* Wiring PI GPIO7 = CM4 GPIOX.5 */
+	/* Wiring PI GPIO7 = RPICM4 GPIOX.5 */
 	if (gpiox.bits.bit5)
 		value |= 0x80;
 
@@ -829,18 +840,18 @@ static void init_gpio_mmap (void)
 	if (fd < 0) {
 		msg(MSG_ERR, "wiringPiSetup: Cannot open memory area for GPIO use. \n");
 	} else {
-		// #define CM4_GPIO_BASE		0xff634000
+		// #define RPICM4_GPIO_BASE		0xff634000
 #ifdef ANDROID
 #if defined(__aarch64__)
-		mapped_gpio = mmap(0, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, CM4_GPIO_BASE);
-		mapped_gpioao = mmap(0, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, CM4_GPIO_AO_BASE);
+		mapped_gpio = mmap(0, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, RPICM4_GPIO_BASE);
+		mapped_gpioao = mmap(0, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, RPICM4_GPIO_AO_BASE);
 #else
-		mapped_gpio = mmap64(0, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, (off64_t)CM4_GPIO_BASE);
-		mapped_gpioao = mmap64(0, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, (off64_t)CM4_GPIO_AO_BASE);
+		mapped_gpio = mmap64(0, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, (off64_t)RPICM4_GPIO_BASE);
+		mapped_gpioao = mmap64(0, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, (off64_t)RPICM4_GPIO_AO_BASE);
 #endif
 #else
-		mapped_gpio = mmap(0, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, CM4_GPIO_BASE);
-		mapped_gpioao = mmap(0, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, CM4_GPIO_AO_BASE);
+		mapped_gpio = mmap(0, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, RPICM4_GPIO_BASE);
+		mapped_gpioao = mmap(0, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, RPICM4_GPIO_AO_BASE);
 #endif
 
 		if (mapped_gpio == MAP_FAILED)
@@ -854,7 +865,7 @@ static void init_gpio_mmap (void)
 			gpioao = (uint32_t *) mapped_gpioao;
 
 		for(uint16_t i = 1; i < 3; ++i) {
-			pwm[i] = ( uint32_t * )mmap( 0, BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, CM4_GPIO_PWM_BASE + (0x1000 * (2 - i)) );
+			pwm[i] = ( uint32_t * )mmap( 0, BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, RPICM4_GPIO_PWM_BASE + (0x1000 * (2 - i)) );
 			if( ( void * )pwm == MAP_FAILED )
 				msg(MSG_ERR, "wiringPiSetup: mmap (PWM) failed: %s \n", strerror (errno));
 		}
@@ -862,7 +873,7 @@ static void init_gpio_mmap (void)
 }
 
 /*----------------------------------------------------------------------------*/
-void init_bananapicm4 (struct libodroid *libwiring)
+void init_bananapirpicm4 (struct libodroid *libwiring)
 {
 	init_gpio_mmap();
 
@@ -883,7 +894,7 @@ void init_bananapicm4 (struct libodroid *libwiring)
 	libwiring->pwmSetClock		= _pwmSetClock;
 
 	/* specify pin base number */
-	libwiring->pinBase		= CM4_GPIO_PIN_BASE;
+	libwiring->pinBase		= RPICM4_GPIO_PIN_BASE;
 
 	/* global variable setup */
 	lib = libwiring;

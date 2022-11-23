@@ -270,6 +270,7 @@ int wiringPiI2CSetup (const int devId)
 	break;
 	case MODEL_BANANAPI_M2S:
 	case MODEL_BANANAPI_CM4:
+	case MODEL_BANANAPI_RPICM4:
 		device = "/dev/i2c-2";
 	break;
 	}

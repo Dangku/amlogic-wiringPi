@@ -47,6 +47,7 @@
 #include "bananapim5.h"
 #include "bananapim2s.h"
 #include "bananapicm4.h"
+#include "bananapirpicm4.h"
 
 /*----------------------------------------------------------------------------*/
 // Const string define
@@ -68,6 +69,7 @@ const char *piModelNames [16] =
 	"BPI-M2-Pro",
 	"BPI-M2S",
 	"BPI-CM4",
+	"BPI-RPICM4",
 };
 
 const char *piRevisionNames [16] =
@@ -525,6 +527,7 @@ int piGpioLayout (void) {
 			break;
 		case MODEL_BANANAPI_M2S:
 		case MODEL_BANANAPI_CM4:
+		case MODEL_BANANAPI_RPICM4:
 			libwiring.maker = MAKER_AMLOGIC;
 			libwiring.mem = 4;
 			libwiring.rev = 1;
@@ -1265,6 +1268,9 @@ int wiringPiSetup (void)
 	break;
 	case MODEL_BANANAPI_CM4:
 		init_bananapicm4(&libwiring);
+	break;
+	case MODEL_BANANAPI_RPICM4:
+		init_bananapirpicm4(&libwiring);
 	break;
 	default:
 		return wiringPiFailure (WPI_ALMOST,

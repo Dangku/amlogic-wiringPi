@@ -715,7 +715,7 @@ static const char *physNamesBananapiM2S [64] =
 };
 
 /*----------------------------------------------------------------------------*/
-static const char *physNamesBananapiCM4All [64] =
+static const char *physNamesBananapiRPICM4All [64] =
 {
         NULL,
 
@@ -746,7 +746,7 @@ static const char *physNamesBananapiCM4All [64] =
 };
 
 /*----------------------------------------------------------------------------*/
-static const char *physNamesBananapiCM4 [64] =
+static const char *physNamesBananapiRPICM4 [64] =
 {
         NULL,
 
@@ -775,7 +775,55 @@ static const char *physNamesBananapiCM4 [64] =
         NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
         NULL,NULL,NULL,
 };
+/*----------------------------------------------------------------------------*/
+static const char *physNamesBananapiCM4All [64] =
+{
+        NULL,
 
+        "    3.3V", "5V      ",
+        "   SDA.2", "5V      ",
+        "   SCL.2", "GND(0V) ",
+        "GPIO.506", "TxD2    ",
+        " GND(0V)", "RxD2    ",
+        "GPIO.432", "GPIO.461",
+        "GPIO.431", "GND(0V) ",
+        "GPIO.501", "GPIO.460",
+        "    3.3V", "GPIO.462",
+        "    MOSI", "GND(0V) ",
+        "    MISO", "GPIO.467",
+        "    SLCK", "SS      ",
+        " GND(0V)", "GPIO.463",
+
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+};
+
+/*----------------------------------------------------------------------------*/
+static const char *physNamesBananapiCM4 [64] =
+{
+        NULL,
+
+        "   3.3V", "5V     ",
+        "  SDA.2", "5V     ",
+        "  SCL.2", "0V     ",
+        " IO.506", "TxD2   ",
+        "     0V", "RxD2   ",
+        " IO.432", "IO.461 ",
+        " IO.431", "0V     ",
+        " IO.501", "IO.460 ",
+        "   3.3V", "IO.462 ",
+        "   MOSI", "0V     ",
+        "   MISO", "IO.467 ",
+        "   SLCK", "SS     ",
+        "     0V", "IO.463 ",
+
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+        NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+};
 /*----------------------------------------------------------------------------*/
 static void readallPhys(int model, int UNU rev, int physPin, const char *physNames[], int isAll) {
 	int pin ;
@@ -833,6 +881,7 @@ static void readallPhys(int model, int UNU rev, int physPin, const char *physNam
 			case MODEL_BANANAPI_M2PRO:
 			case MODEL_BANANAPI_M2S:
 			case MODEL_BANANAPI_CM4:
+			case MODEL_BANANAPI_RPICM4:
 				printf (" | %2d | %5s", getDrive(pin), pupd[getPUPD(pin)]);
 				break;
 			default:
@@ -878,6 +927,7 @@ static void readallPhys(int model, int UNU rev, int physPin, const char *physNam
 			case MODEL_BANANAPI_M2PRO:
 			case MODEL_BANANAPI_M2S:
 			case MODEL_BANANAPI_CM4:
+			case MODEL_BANANAPI_RPICM4:
 				printf (" | %-5s | %-2d", pupd[getPUPD(pin)], getDrive(pin));
 				break;
 			default:
@@ -932,6 +982,26 @@ static void printBody(int model, int rev, const char *physNames[], int isAll) {
 			" | GPIO | wPi |   Name   | Mode | V | DS | PU/PD | Physical | PU/PD | DS | V | Mode |   Name   | wPi | GPIO |\n"
 			" +------+-----+----------+------+---+----+-------+----++----+-------+----+---+------+----------+-----+------+\n");
 	for (int pin = 1; pin <= 40; pin += 2)
+		readallPhys(model, rev, pin, physNames, isAll);
+	(isAll == FALSE)
+		? printf(
+			" +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+\n"
+			" | I/O | wPi |   Name  | Mode | V | Physical | V | Mode |  Name   | wPi | I/O |\n")
+		: printf(
+			" +------+-----+----------+------+---+----+-------+----++----+-------+----+---+------+----------+-----+------+\n"
+			" | GPIO | wPi |   Name   | Mode | V | DS | PU/PD | Physical | PU/PD | DS | V | Mode |   Name   | wPi | GPIO |\n");
+}
+
+/*----------------------------------------------------------------------------*/
+static void printBodyBananapiCM4(int model, int rev, const char *physNames[], int isAll) {
+	(isAll == FALSE)
+		? printf(
+			" | I/O | wPi |   Name  | Mode | V | Physical | V | Mode |  Name   | wPi | I/O |\n"
+			" +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+\n")
+		: printf(
+			" | GPIO | wPi |   Name   | Mode | V | DS | PU/PD | Physical | PU/PD | DS | V | Mode |   Name   | wPi | GPIO |\n"
+			" +------+-----+----------+------+---+----+-------+----++----+-------+----+---+------+----------+-----+------+\n");
+	for (int pin = 1; pin <= 26; pin += 2)
 		readallPhys(model, rev, pin, physNames, isAll);
 	(isAll == FALSE)
 		? printf(
@@ -1112,6 +1182,10 @@ void doReadall(int argc, char *argv[]) {
 			headerName = (isAll == FALSE) ? "--- CM4 ---" : "---- Model  BANANAPI-CM4 ----";
 			physNames = (char *) ((isAll == FALSE) ? physNamesBananapiCM4 : physNamesBananapiCM4All);
 			break;
+		case MODEL_BANANAPI_RPICM4:
+			headerName = (isAll == FALSE) ? "--- RPICM4 ---" : "---- Model  BANANAPI-RPICM4 ----";
+			physNames = (char *) ((isAll == FALSE) ? physNamesBananapiRPICM4 : physNamesBananapiRPICM4All);
+			break;
 		default:
 			printf("Oops - unknown model: %d\n", model);
 			return;
@@ -1122,6 +1196,11 @@ void doReadall(int argc, char *argv[]) {
 			printHeaderHC4((const char *) headerName, isAll);
 			printBodyHC4(model, rev, (const char **) physNames, isAll);
 			printHeaderHC4((const char *) headerName, isAll);
+			break;
+		case MODEL_BANANAPI_CM4:
+			printHeader((const char *) headerName, isAll);
+			printBodyBananapiCM4(model, rev, (const char **) physNames, isAll);
+			printHeader((const char *) headerName, isAll);
 			break;
 		default:
 			printHeader((const char *) headerName, isAll);
