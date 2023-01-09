@@ -29,10 +29,10 @@
 /*----------------------------------------------------------------------------*/
 static const int pinToGpio[64] = {
 	// wiringPi number to native gpio number
-	432, 461,	//  0 |  1 : GPIOH.5, GPIOA.1
+	506, 461,	//  0 |  1 : GPIOAO.10, GPIOA.1
 	431, 501,	//  2 |  3 : GPIOH.4, GPIOAO.5
 	460, 462,	//  4 |  5 : GPIOA.0, GPIOA.2
-	467, 506,	//  6 |  7 : GPIOA.7, GPIOAO.10
+	467, 432,	//  6 |  7 : GPIOA.7, GPIOH.5
 	493, 494,	//  8 |  9 : GPIOX.17(I2C-2_SDA), GPIOX.18(I2C-2_SCL)
 	486, 463,	// 10 | 11 : GPIOX.10(SPI_SS), GPIOA.3
 	484, 485,	// 12 | 13 : GPIOX.8(SPI_MOSI,PWM_C), GPIOX.9(SPI_MISO)
@@ -50,9 +50,9 @@ static const int phyToGpio[64] = {
 	 -1,  -1,	//  1 |  2 : 3.3V, 5.0V
 	493,  -1,	//  3 |  4 : GPIOX.17(I2C-2_SDA), 5.0V
 	494,  -1,	//  5 |  6 : GPIOX.18(I2C-2_SCL), GND
-	506, 482,	//  7 |  8 : GPIOAO.10, GPIOX.6(UART_B_TX,PWM_D)
+	432, 482,	//  7 |  8 : GPIOH.5, GPIOX.6(UART_B_TX,PWM_D)
 	 -1, 483,	//  9 | 10 : GND, GPIOX.7(UART_B_RX,PWM_F)
-	432, 461,	// 11 | 12 : GPIOH.5, GPIOA.1
+	506, 461,	// 11 | 12 : GPIOAO.10, GPIOA.1
 	431,  -1,	// 13 | 14 : GPIOH.4, GND
 	501, 460,	// 15 | 16 : GPIOAO.5, GPIOA.0
 	 -1, 462,	// 17 | 18 : 3.3V, GPIOA.2

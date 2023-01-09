@@ -40,9 +40,9 @@ static const int pinToGpio[64] = {
 	483,  -1,	// 16 | 17 : GPIOX.7(UART_B_RX,PWM_F),
 	 -1,  -1,	// 18 | 19 :
 	 -1, 431,	// 20 | 21 : , GPIOH.4
-	432, 467,	// 22 | 23 : GPIOH.5, GPIOA.7
+	506, 467,	// 22 | 23 : GPIOAO.10, GPIOA.7
 	462, 460,	// 24 | 25 : GPIOA.2, GPIOA.0
-	506, 507,	// 26 | 27 : GPIOAO.10, GPIOAO.11
+	432, 507,	// 26 | 27 : GPIOH.5, GPIOAO.11
 	464, 463,	// 28 | 29 : GPIOA.4, GPIOA.3
 	474, 475,	// 30 | 31 : GPIOA.14(I2C-3_SDA), GPIOA_15(I2C3_SCL)
 	// Padding:
@@ -68,7 +68,7 @@ static const int phyToGpio[64] = {
 	 -1, 501,	// 25 | 26 : GND, GPIOAO.5
 	474, 475,	// 27 | 28 : GPIOA_14(I2C-3_SDA), GPIOA_15(I2C-3_SCL)
 	431,  -1,	// 29 | 30 : GPIOH.4, GND
-	432, 506,	// 31 | 32 : GPIOH.5, GPIOAO.10
+	506, 432,	// 31 | 32 : GPIOAO.10, GPIOH.5
 	467,  -1,	// 33 | 34 : GPIOA.7, GND
 	462, 507,	// 35 | 36 : GPIOA.2, GPIOAO.11
 	460, 464,	// 37 | 38 : GPIOA.0, GPIOA.4
