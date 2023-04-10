@@ -139,7 +139,7 @@ static const int phyToGpio_rev2[64] = {
 /*----------------------------------------------------------------------------*/
 // wiringPi Pinmap control arrary
 /*----------------------------------------------------------------------------*/
-const int *pinToGpio, *phyToGpio;
+extern const int *pinToGpio, *phyToGpio;
 
 /* ADC file descriptor */
 static int adcFds[2];
