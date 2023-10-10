@@ -48,6 +48,7 @@
 #include "bananapim2s.h"
 #include "bananapicm4.h"
 #include "bananapirpicm4.h"
+#include "bananapicm5io.h"
 
 /*----------------------------------------------------------------------------*/
 // Const string define
@@ -70,6 +71,7 @@ const char *piModelNames [16] =
 	"BPI-M2S",
 	"BPI-CM4",
 	"BPI-RPICM4",
+	"BPI-CM5IO",
 };
 
 const char *piRevisionNames [16] =
@@ -95,7 +97,7 @@ const char *piRevisionNames [16] =
 const char *piMakerNames [16] =
 {
 	"Unknown",	// 0
-	"AMLogic",	// 1
+	"Amlogic",	// 1
 	"Samsung",	// 2
 	"Rockchip",	// 3
 	"Unknown04",	// 4
@@ -528,6 +530,7 @@ int piGpioLayout (void) {
 		case MODEL_BANANAPI_M2S:
 		case MODEL_BANANAPI_CM4:
 		case MODEL_BANANAPI_RPICM4:
+		case MODEL_BANANAPI_CM5IO:
 			libwiring.maker = MAKER_AMLOGIC;
 			libwiring.mem = 4;
 			libwiring.rev = 1;
@@ -1238,43 +1241,45 @@ int wiringPiSetup (void)
 	}
 
 	switch (libwiring.model) {
-	case MODEL_ODROID_C1:
-		init_odroidc1(&libwiring);
-	break;
-	case MODEL_ODROID_C2:
-		init_odroidc2(&libwiring);
-	break;
-	case MODEL_ODROID_XU3:
-		init_odroidxu3(&libwiring);
-	break;
-	case MODEL_ODROID_N1:
-		init_odroidn1(&libwiring);
-	break;
-	case MODEL_ODROID_N2:
-		init_odroidn2(&libwiring);
-	break;
-	case MODEL_ODROID_C4:
-		init_odroidc4(&libwiring);
-	break;
-	case MODEL_ODROID_HC4:
-		init_odroidhc4(&libwiring);
-	break;
-	case MODEL_BANANAPI_M5:
-	case MODEL_BANANAPI_M2PRO:
-		init_bananapim5(&libwiring);
-	break;
-	case MODEL_BANANAPI_M2S:
-		init_bananapim2s(&libwiring);
-	break;
-	case MODEL_BANANAPI_CM4:
-		init_bananapicm4(&libwiring);
-	break;
-	case MODEL_BANANAPI_RPICM4:
-		init_bananapirpicm4(&libwiring);
-	break;
-	default:
-		return wiringPiFailure (WPI_ALMOST,
-			"wiringPiSetup: Unknown model\n");
+		case MODEL_ODROID_C1:
+			init_odroidc1(&libwiring);
+			break;
+		case MODEL_ODROID_C2:
+			init_odroidc2(&libwiring);
+			break;
+		case MODEL_ODROID_XU3:
+			init_odroidxu3(&libwiring);
+			break;
+		case MODEL_ODROID_N1:
+			init_odroidn1(&libwiring);
+			break;
+		case MODEL_ODROID_N2:
+			init_odroidn2(&libwiring);
+			break;
+		case MODEL_ODROID_C4:
+			init_odroidc4(&libwiring);
+			break;
+		case MODEL_ODROID_HC4:
+			init_odroidhc4(&libwiring);
+			break;
+		case MODEL_BANANAPI_M5:
+		case MODEL_BANANAPI_M2PRO:
+			init_bananapim5(&libwiring);
+			break;
+		case MODEL_BANANAPI_M2S:
+			init_bananapim2s(&libwiring);
+			break;
+		case MODEL_BANANAPI_CM4:
+			init_bananapicm4(&libwiring);
+			break;
+		case MODEL_BANANAPI_RPICM4:
+			init_bananapirpicm4(&libwiring);
+			break;
+		case MODEL_BANANAPI_CM5IO:
+			init_bananapicm5io(&libwiring);
+			break;
+		default:
+			return wiringPiFailure (WPI_ALMOST, "wiringPiSetup: Unknown model\n");
 	}
 
 	initialiseEpoch ();

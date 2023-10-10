@@ -40,6 +40,7 @@
 
 static const char       *spiDevType0    = "/dev/spidev0.";
 static const char       *spiDevType1    = "/dev/spidev1.";
+static const char       *spiDevType3    = "/dev/spidev3.";
 static const uint8_t     spiBPW         = 8;
 static const uint16_t    spiDelay       = 0;
 
@@ -139,31 +140,34 @@ int wiringPiSPISetupMode (int channel, int speed, int mode)
 	piBoardId (&model, &temp, &temp, &temp, &temp) ;
 
 	switch(model)	{
-	case MODEL_ODROID_C2:
-		return wiringPiFailure (WPI_ALMOST,
-			"ODROID C2 does not support hardware SPI. Check out the SPI bitbang and use wiringPiSPISetupInterface.\n");
-	case MODEL_ODROID_HC4:
-		return wiringPiFailure (WPI_ALMOST,
-			"ODROID HC4 does not support hardware SPI.\n");
-	case MODEL_ODROID_C1:
-	case MODEL_ODROID_N2:
-	case MODEL_ODROID_C4:
-	case MODEL_BANANAPI_M5:
-	case MODEL_BANANAPI_M2PRO:
-	case MODEL_BANANAPI_M2S:
-	case MODEL_BANANAPI_CM4:
-	case MODEL_BANANAPI_RPICM4:
-		sprintf(device, "%s%d", spiDevType0, channel);
-	break;
-	case MODEL_ODROID_XU3:
-		if (cmpKernelVersion(KERN_NUM_TO_MAJOR, 5))
+		case MODEL_ODROID_C2:
+			return wiringPiFailure (WPI_ALMOST,
+				"ODROID C2 does not support hardware SPI. Check out the SPI bitbang and use wiringPiSPISetupInterface.\n");
+		case MODEL_ODROID_HC4:
+			return wiringPiFailure (WPI_ALMOST,
+				"ODROID HC4 does not support hardware SPI.\n");
+		case MODEL_ODROID_C1:
+		case MODEL_ODROID_N2:
+		case MODEL_ODROID_C4:
+		case MODEL_BANANAPI_M5:
+		case MODEL_BANANAPI_M2PRO:
+		case MODEL_BANANAPI_M2S:
+		case MODEL_BANANAPI_CM4:
+		case MODEL_BANANAPI_RPICM4:
 			sprintf(device, "%s%d", spiDevType0, channel);
-		else
+			break;
+		case MODEL_BANANAPI_CM5IO:
+			sprintf(device, "%s%d", spiDevType3, channel);
+			break;
+		case MODEL_ODROID_XU3:
+			if (cmpKernelVersion(KERN_NUM_TO_MAJOR, 5))
+				sprintf(device, "%s%d", spiDevType0, channel);
+			else
+				sprintf(device, "%s%d", spiDevType1, channel);
+			break;
+		case MODEL_ODROID_N1:
 			sprintf(device, "%s%d", spiDevType1, channel);
-	break;
-	case MODEL_ODROID_N1:
-		sprintf(device, "%s%d", spiDevType1, channel);
-	break;
+			break;
 	}
 
 	return wiringPiSPISetupInterface(device, channel, speed, mode);

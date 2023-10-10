@@ -12,7 +12,8 @@ SRC	=	odroid_xu3.tex	\
 		bananapi_m5.tex \
 		bananapi_m2s.tex \
 		bananapi_cm4.tex \
-		bananapi_rpicm4.tex
+		bananapi_rpicm4.tex \
+		bananapi_cm5io.tex
 
 DVI	=	$(SRC:.tex=.dvi)
 

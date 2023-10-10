@@ -49,7 +49,7 @@ SRC	=	blink.c blink-bpi.c blink8.c blink12.c				\
 		lowPower.c							\
 		max31855.c							\
 		rht03.c								\
-		blinkall.c lcd-bpi.c 52pi-bpi.c matrixled-bpi.c			\
+		blinkall-bpi.c lcd-bpi.c 52pi-bpi.c matrixled-bpi.c			\
 		berryclip-bpi.c
 
 OBJ	=	$(SRC:.c=.o)
@@ -71,9 +71,9 @@ blink-bpi: blink-bpi.o
 	$Q echo [link]
 	$Q $(CC) -o $@ blink-bpi.o $(LDFLAGS) $(LDLIBS)
 
-blinkall: blinkall.o
+blinkall-bpi: blinkall-bpi.o
 	$Q echo [link]
-	$Q $(CC) -o $@ blinkall.o $(LDFLAGS) $(LDLIBS)
+	$Q $(CC) -o $@ blinkall-bpi.o $(LDFLAGS) $(LDLIBS)
 
 blink8:	blink8.o
 	$Q echo [link]
