@@ -24,6 +24,7 @@
 VERSION=$(shell cat ../VERSION)
 DESTDIR?=/usr
 PREFIX?=/local
+DEBTEMPDIR?=../
 
 MAJOR=$(shell cat ../VERSION | cut -d'.' -f1)
 
@@ -121,6 +122,16 @@ install:	$(DYNAMIC)
 	$Q ln -sf libwiringPi.so.$(VERSION)				$(DESTDIR)/lib/libwiringPi.so.$(MAJOR)
 	$Q ln -sf libwiringPi.so.$(MAJOR)				$(DESTDIR)/lib/libwiringPi.so
 	$Q $(LDCONFIG)
+
+.PHONY:	install-deb
+install-deb:	$(DYNAMIC)
+	$Q echo "[Install Headers: deb]"
+	$Q install -m 0755 -d						$(DEBTEMPDIR)/debian-template/wiringPi/usr/local/include
+	$Q install -m 0644 $(HEADERS)					$(DEBTEMPDIR)/debian-template/wiringPi/usr/local/include
+	$Q echo "[Install Dynamic Lib: deb]"
+	install -m 0755 -d						$(DEBTEMPDIR)/debian-template/wiringPi/usr/local/lib
+	install -m 0755 libwiringPi.so.$(VERSION)			$(DEBTEMPDIR)/debian-template/wiringPi/usr/local/lib/libwiringPi.so.$(VERSION)
+	cd  $(DEBTEMPDIR)/debian-template/wiringPi/usr/local/lib && ln -sf libwiringPi.so.$(VERSION)	libwiringPi.so && cd -
 
 .PHONY:	install-static
 install-static:	$(STATIC)

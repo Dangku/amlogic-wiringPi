@@ -1251,7 +1251,7 @@ void doReadall(int argc, char *argv[]) {
 			physNames = (char *) ((isAll == FALSE) ? physNamesBananapiRPICM4 : physNamesBananapiRPICM4All);
 			break;
 		case MODEL_BANANAPI_CM5IO:
-			headerName = (isAll == FALSE) ? "--- CM5IO ---" : "---- Model  BANANAPI-CM5IO ----";
+			headerName = (isAll == FALSE) ? "-- CM5IO -" : "-- Model  BANANAPI-CM5IO -";
 			physNames = (char *) ((isAll == FALSE) ? physNamesBananapiCM5IO : physNamesBananapiCM5IOAll);
 			break;
 		default:
