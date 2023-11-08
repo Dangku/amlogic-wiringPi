@@ -72,6 +72,7 @@ const char *piModelNames [16] =
 	"BPI-CM4",
 	"BPI-RPICM4",
 	"BPI-CM5IO",
+	"BPI-CM5-BPICM4IO",
 };
 
 const char *piRevisionNames [16] =
@@ -531,6 +532,7 @@ int piGpioLayout (void) {
 		case MODEL_BANANAPI_CM4:
 		case MODEL_BANANAPI_RPICM4:
 		case MODEL_BANANAPI_CM5IO:
+		case MODEL_BANANAPI_CM5BPICM4IO:
 			libwiring.maker = MAKER_AMLOGIC;
 			libwiring.mem = 4;
 			libwiring.rev = 1;
@@ -1277,6 +1279,9 @@ int wiringPiSetup (void)
 			break;
 		case MODEL_BANANAPI_CM5IO:
 			init_bananapicm5io(&libwiring);
+			break;
+		case MODEL_BANANAPI_CM5BPICM4IO:
+			init_bananapicm5bpicm4io(&libwiring);
 			break;
 		default:
 			return wiringPiFailure (WPI_ALMOST, "wiringPiSetup: Unknown model\n");

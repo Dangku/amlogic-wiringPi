@@ -2,7 +2,7 @@
 *.so
 lib*.so.*
 *~
-debian-template/wiringpi-*.deb
+debian-template/wiringpi_3.8_arm64.deb
 gpio/gpio
 *.aux
 *.dvi
@@ -13,3 +13,4 @@ gpio/gpio
 
 libs/
 obj/
+/debian-template/wiringPi/usr

@@ -234,6 +234,7 @@ static void doI2Cdetect (UNU int argc, char *argv [])
 		port = 2;
 		break;
 	case MODEL_BANANAPI_CM5IO:
+	case MODEL_BANANAPI_CM5BPICM4IO:
 		port = 5;
 		break;
 	default:
